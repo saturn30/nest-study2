@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { UsersModule } from './users/users.module';
@@ -6,8 +6,7 @@ import { EmailModule } from './email/email.module';
 import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
-console.log(process.env.DB_HOST);
+import { LoggerMiddleware } from './common/logger.middleware';
 
 @Module({
   imports: [
@@ -33,4 +32,8 @@ console.log(process.env.DB_HOST);
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('/users');
+  }
+}
