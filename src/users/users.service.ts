@@ -1,11 +1,16 @@
 import * as uuid from 'uuid';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { EmailService } from 'src/email/email.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserInfo } from './UserInfo';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +19,7 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
     private dataSource: DataSource,
     private emailService: EmailService,
+    private authService: AuthService,
   ) {}
 
   async createUser(params: CreateUserParams) {
@@ -31,15 +37,35 @@ export class UsersService {
   }
 
   async verifyEmail(signupVerifyToken: string) {
-    throw new Error('method not implemented');
+    const user = await this.userRepository.findOne({
+      where: { signupVerifyToken },
+    });
+    if (!user) throw new NotFoundException('유저가 존재하지 않습니다.');
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async login({ email, password }: UserLoginDto) {
-    throw new Error('method not implemented');
+    const user = await this.userRepository.findOne({
+      where: { email, password },
+    });
+
+    if (!user) throw new NotFoundException('유저가 존재하지 않습니다');
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async getUserInfo(userId: string): Promise<UserInfo> {
-    throw new Error('Method not implemented');
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('유저가 존재하지 않습니다.');
+    return { id: user.id, name: user.name, email: user.email };
   }
 
   private async checkUserExists(email: string) {
