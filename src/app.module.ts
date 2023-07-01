@@ -10,6 +10,8 @@ import { LoggerMiddleware } from './common/logger.middleware';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import authConfig from './config/authConfig';
+import { WinstonModule, utilities } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
   imports: [
@@ -28,6 +30,17 @@ import authConfig from './config/authConfig';
       database: 'test',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.DB_SYNCHRONIZE === 'true',
+    }),
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          level: 'info',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            utilities.format.nestLike('MyApp', { prettyPrint: true }),
+          ),
+        }),
+      ],
     }),
     UsersModule,
     EmailModule,
