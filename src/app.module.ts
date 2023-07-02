@@ -11,6 +11,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import authConfig from './config/authConfig';
 import { WinstonModule, utilities } from 'nest-winston';
+import { ExceptionModule } from './common/exception/exception.module';
 import * as winston from 'winston';
 
 @Module({
@@ -45,6 +46,7 @@ import * as winston from 'winston';
     UsersModule,
     EmailModule,
     AuthModule,
+    ExceptionModule,
   ],
   controllers: [],
   providers: [AuthService],
