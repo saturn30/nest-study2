@@ -13,7 +13,10 @@ import authConfig from './config/authConfig';
 import { WinstonModule, utilities } from 'nest-winston';
 import { ExceptionModule } from './common/exception/exception.module';
 import { BatchModule } from './batch/batch.module';
+import { HealthCheckController } from './health-check/health-check.controller';
 import * as winston from 'winston';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -44,13 +47,15 @@ import * as winston from 'winston';
         }),
       ],
     }),
+    TerminusModule,
+    HttpModule,
     UsersModule,
     EmailModule,
     AuthModule,
     ExceptionModule,
     BatchModule,
   ],
-  controllers: [],
+  controllers: [HealthCheckController],
   providers: [AuthService],
 })
 export class AppModule implements NestModule {
