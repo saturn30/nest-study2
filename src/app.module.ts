@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import authConfig from './config/authConfig';
 import { WinstonModule, utilities } from 'nest-winston';
 import { ExceptionModule } from './common/exception/exception.module';
+import { BatchModule } from './batch/batch.module';
 import * as winston from 'winston';
 
 @Module({
@@ -47,6 +48,7 @@ import * as winston from 'winston';
     EmailModule,
     AuthModule,
     ExceptionModule,
+    BatchModule,
   ],
   controllers: [],
   providers: [AuthService],
